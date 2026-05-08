@@ -5,9 +5,9 @@
 package viva2.ShoppingCartModule;
 
 import viva2.InventoryManagementModule.Product;
-//import viva2.UndoStack;
+//import viva2.UndoStack; //new
 public class CartList {
-    //private UndoStack history = new UndoStack();
+    //private UndoStack history = new UndoStack(); //new
     private CartNode head;
     int size;
     
@@ -18,6 +18,10 @@ public class CartList {
     
     //Adds new node at the end; if product exists, updates quantity
     public void addItem (Product p, int qty){
+        if (qty<=0){
+            System.out.println("Invalid quantity");
+            return;
+        }
         if (qty > p.getStock()){
                     System.out.println("Insufficient stock");
                     return;
@@ -33,6 +37,7 @@ public class CartList {
                 }
                 p.setStock(p.getStock()-qty);
                 current.quantity += qty;
+                System.out.println("Product successfully added");
                 //history.push(new UndoStack.CartAction(p.getId(), qty));
                 return;
             }    
@@ -46,9 +51,11 @@ public class CartList {
         CartNode newNode = new CartNode(p,qty);
         if (head == null){
             head = newNode;
+            System.out.println("Product successfully added");
         } 
         else {
             current.next = newNode;
+            System.out.println("Product successfully added");
         }
         size++;
         //history.push(new UndoStack.CartAction(p.getId(), qty));

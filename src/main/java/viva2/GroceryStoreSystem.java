@@ -130,16 +130,12 @@ public class GroceryStoreSystem {
                     System.out.print("Enter Product ID to add to cart: ");
                     try {
                         int id = Integer.parseInt(scan.nextLine());
+                           
                         System.out.print("Enter Quantity: ");
                         int qty = Integer.parseInt(scan.nextLine());
-                        if (qty<=0){
-                            System.out.println("Invalid quantity");
-                            continue;
-                        }
                         Product p = inventory.getProductById(id);
                         if (p != null){
                             cart.addItem(p, qty);
-                            System.out.println("Product successfully added");
                         } 
                         else{
                             System.out.println("Product not found");
@@ -192,11 +188,11 @@ public class GroceryStoreSystem {
                     break;
                     
                 case 11:
-                    System.out.println("\n============ BILL ============");
+                    System.out.println("\n================= BILL =================");
                     cart.displayCart();
                     System.out.println("----------------------------------");
                     System.out.printf("\nTotal: RM %.2f\n", cart.calculateTotal());
-                    System.out.println("==================================");
+                    System.out.println("============================================");
                     System.out.println("Inventory stock reduced permanently.");
                     
                     cart = new CartList();
