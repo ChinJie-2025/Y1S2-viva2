@@ -5,9 +5,9 @@
 package viva2.ShoppingCartModule;
 
 import viva2.InventoryManagementModule.Product;
-//import viva2.UndoStack; //new
+import viva2.UndoStack; //new
 public class CartList {
-    //private UndoStack history = new UndoStack(); //new
+    private UndoStack history = new UndoStack(); //new
     private CartNode head;
     int size;
     
@@ -88,6 +88,7 @@ public class CartList {
             }
             current = current.next;
         }
+        System.out.println("Proudct " + productId + " not found in the cart");
     }
     
     //Changes quantity of existing cart item

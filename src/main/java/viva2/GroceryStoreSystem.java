@@ -130,9 +130,9 @@ public class GroceryStoreSystem {
                     System.out.print("Enter Product ID to add to cart: ");
                     try {
                         int id = Integer.parseInt(scan.nextLine());
-                           
                         System.out.print("Enter Quantity: ");
                         int qty = Integer.parseInt(scan.nextLine());
+                        
                         Product p = inventory.getProductById(id);
                         if (p != null){
                             cart.addItem(p, qty);
