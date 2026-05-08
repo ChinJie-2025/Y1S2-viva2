@@ -5,9 +5,9 @@
 package viva2.ShoppingCartModule;
 
 import viva2.InventoryManagementModule.Product;
-import viva2.UndoStack; //new
+import viva2.UndoStack; 
 public class CartList {
-    private UndoStack history = new UndoStack(); //new
+    private UndoStack history = new UndoStack();
     private CartNode head;
     int size;
     
@@ -28,18 +28,15 @@ public class CartList {
         }
         
         CartNode current = head;
+        boolean updated = false; 
+        
         while (current != null){
             // if product exists, update qty
             if (current.product.getId() == p.getId()){
-                if (qty > p.getStock()){
-                    System.out.println("Insufficient stock");
-                    return;
-                }
                 p.setStock(p.getStock()-qty);
                 current.quantity += qty;
-                System.out.println("Product successfully added");
-                //history.push(new UndoStack.CartAction(p.getId(), qty));
-                return;
+                updated = true; 
+                break; 
             }    
             if (current.next == null)
                 break;
@@ -47,6 +44,22 @@ public class CartList {
         }
         
         // add new node at the end
+        if (!updated){ 
+            p.setStock(p.getStock()-qty);
+            CartNode newNode = new CartNode(p,qty);
+            if (head == null){
+                head = newNode;
+            }
+            else{
+                current.next = newNode;
+            }
+            size++;
+        }
+        
+        history.push(new UndoStack.CartAction(p.getId(), qty)); //new
+        System.out.println("Product successfully added");
+        
+        /* old code
         p.setStock(p.getStock()-qty);
         CartNode newNode = new CartNode(p,qty);
         if (head == null){
@@ -58,7 +71,7 @@ public class CartList {
             System.out.println("Product successfully added");
         }
         size++;
-        //history.push(new UndoStack.CartAction(p.getId(), qty));
+        */
     }
     
     // Removes node with matching product ID
@@ -97,6 +110,14 @@ public class CartList {
             System.out.println("Invalid quantity");
             return;
         }
+        //        public boolean isAvailable (int id, int requestedQty){
+//        Product check = searchById(id);
+//        if (check != null && check.getStock() >= requestedQty)
+//            return true;
+//        else
+//            return false;
+//        }
+
         CartNode item = findItem(productId);
         if (item != null){
             int diff = newQty - item.quantity;
@@ -106,7 +127,9 @@ public class CartList {
             }
             else{
                 item.product.setStock(item.product.getStock() - diff);
+                history.push(new UndoStack.CartAction(productId, diff));//new
                 item.quantity = newQty;
+                System.out.println("Quantity updated successfully");
                 return;
             }
         }
@@ -164,29 +187,73 @@ public class CartList {
     }
     
     // to remove last added item/product
-    public Product undo(){
-        if (head == null)
-            return null;
-        
-        if (head.next == null) {
-            head.product.setStock(head.product.getStock() + head.quantity);
-            Product p = head.product;
-            head = null;
-            size--;
-            return p;
-        }
-        
-        CartNode current = head;
-        while (current.next.next != null) {
-            current = current.next;
-        }
-        CartNode lastNode = current.next;
-        lastNode.product.setStock(lastNode.product.getStock() + lastNode.quantity);
-        Product p = lastNode.product;
-        current.next = null;
-        size--;
-        return p;  
+//    public Product undo(){
+//        if (head == null)
+//            return null;
+//        
+//        if (head.next == null) {
+//            head.product.setStock(head.product.getStock() + head.quantity);
+//            Product p = head.product;
+//            head = null;
+//            size--;
+//            return p;
+//        }
+//        
+//        CartNode current = head;
+//        while (current.next.next != null) {
+//            current = current.next;
+//        }
+//        CartNode lastNode = current.next;
+//        lastNode.product.setStock(lastNode.product.getStock() + lastNode.quantity);
+//        Product p = lastNode.product;
+//        current.next = null;
+//        size--;
+//        return p;  
+//    }
+    
+    
+    // new undo
+    public void undo(){
+    // Get the last recorded addition from the Stack
+    UndoStack.CartAction lastAction = history.pop(); 
+    
+    if (lastAction == null){
+        System.out.println("No item to undo"); 
+        return;
     }
+
+    //Find the product node in the Singly Linked List
+    CartNode current = head; 
+    CartNode previous = null;
+    
+    while (current != null){
+        if (current.product.getId() == lastAction.productId){
+            // Restore the stock to the inventory permanently
+            current.product.setStock(current.product.getStock() + lastAction.quantity);
+
+            // Reduce the quantity in the cart for this specific item
+            current.quantity -= lastAction.quantity; 
+
+            // If quantity is now 0, delete the node from the list
+            if (current.quantity <= 0){
+                if (previous == null){
+                    // Item was at the head
+                    head = head.next; 
+                } else {
+                    // Item was in middle or end
+                    previous.next = current.next; 
+                }
+                size--;
+            }
+            
+            System.out.println("Undo successful! Reverted addition of: " + current.product.getName());
+            return;
+        }
+        previous = current;
+        current = current.next;
+    }
+}
+
     
     // Returns number of items in cart
     public int getSize(){

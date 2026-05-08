@@ -8,14 +8,18 @@ import java.util.ArrayList;
 import viva2.InventoryManagementModule.InventoryManager;
 import viva2.ShoppingCartModule.CartList;
 import viva2.InventoryManagementModule.Product;
+
 public class GroceryStoreSystem {
     public static void main(String[] args) {
         InventoryManager inventory = new InventoryManager();
         CartList cart = new CartList();
         Scanner scan = new Scanner(System.in);
         
-        // handle exception later
-        inventory.loadFromFile("inventory.txt");
+        try {
+            inventory.loadFromFile("inventory.txt");
+        }catch(Exception e){
+            System.out.println("Cannot load inventory file.");
+        }
         
         boolean exit = false;
         while (!exit){
@@ -175,12 +179,8 @@ public class GroceryStoreSystem {
                     break;
                     
                 case 9:
-                    Product p = cart.undo();
-                    if (p != null) {
-                        System.out.println("Undo successful! Removed item: " + p.getName());
-                    } else {
-                        System.out.println("No item to undo");
-                    }
+                    cart.undo(); 
+//                    }
                     break;
                     
                 case 10:   
