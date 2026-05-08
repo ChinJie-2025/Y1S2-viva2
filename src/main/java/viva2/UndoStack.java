@@ -29,7 +29,7 @@ public class UndoStack{
         top = newNode;
     }
 
-    public CartAction pop(){ // need to check got size-- or not
+    public CartAction pop(){
         if (top == null)
             return null;
         CartAction action = top.action;

@@ -27,30 +27,21 @@ public class CartList {
                     return;
         }
         
-        CartNode current = head;
-        boolean updated = false; 
-        
-        while (current != null){
-            // if product exists, update qty
-            if (current.product.getId() == p.getId()){
-                p.setStock(p.getStock()-qty);
-                current.quantity += qty;
-                updated = true; 
-                break; 
-            }    
-            if (current.next == null)
-                break;
-            current = current.next;
-        }
-        
-        // add new node at the end
-        if (!updated){ 
+        CartNode exist=findItem(p.getId());
+        if(exist!=null){ //exist item, update quantity
+            p.setStock(p.getStock()-qty);
+            exist.quantity+=qty;
+        }else{
             p.setStock(p.getStock()-qty);
             CartNode newNode = new CartNode(p,qty);
-            if (head == null){
+            if (head == null){  //empty cart
                 head = newNode;
             }
-            else{
+            else{  // add at the end
+                CartNode current = head;
+                while (current.next != null) {
+                    current = current.next;
+                }
                 current.next = newNode;
             }
             size++;
@@ -110,14 +101,7 @@ public class CartList {
             System.out.println("Invalid quantity");
             return;
         }
-        //        public boolean isAvailable (int id, int requestedQty){
-//        Product check = searchById(id);
-//        if (check != null && check.getStock() >= requestedQty)
-//            return true;
-//        else
-//            return false;
-//        }
-
+        
         CartNode item = findItem(productId);
         if (item != null){
             int diff = newQty - item.quantity;
